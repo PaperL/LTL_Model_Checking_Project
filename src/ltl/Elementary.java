@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Elementary {
-    public final Set<FormulaNode> elementarySet = new HashSet<FormulaNode>();
+    public final Set<FormulaNode> elementarySet = new HashSet<>();
 
     public boolean add(FormulaNode formula) {
         return elementarySet.add(formula);

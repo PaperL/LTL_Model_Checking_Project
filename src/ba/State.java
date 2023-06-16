@@ -1,7 +1,7 @@
 package ba;
 
 public class State {
-    private final String name;
+    public final String name;
     public boolean initial = false;
 
     public State(String string) {

@@ -3,7 +3,7 @@ package ba;
 import java.util.*;
 
 abstract public class BA {
-    protected final ArrayList<State> states = new ArrayList<>();
+    public final ArrayList<State> states = new ArrayList<>();
     protected final ArrayList<Symbol> alphabet = new ArrayList<>();
     protected final Map<State, Map<Symbol, Set<State>>> delta = new HashMap<>();
 

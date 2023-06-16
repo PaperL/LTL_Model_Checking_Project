@@ -1,5 +1,8 @@
 package ts;
 
+import ba.NBA;
+import org.antlr.v4.runtime.misc.Pair;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -10,10 +13,12 @@ import java.util.stream.IntStream;
  */
 public class TS {
     public final ArrayList<State> states = new ArrayList<>();
-    private final ArrayList<Act> acts = new ArrayList<>();
-    private final Map<State, Map<State, Set<Act>>> transitions = new HashMap<>();
-    private final ArrayList<Proposition> propositions = new ArrayList<>();
-    private final Map<State, Set<Proposition>> L = new HashMap<>();
+    public final ArrayList<Act> acts = new ArrayList<>();
+    public final Map<State, Map<State, Set<Act>>> transitions = new HashMap<>();
+    public final ArrayList<Proposition> propositions = new ArrayList<>();
+    public final Map<State, Set<Proposition>> L = new HashMap<>();
+
+    public final Set<State> acceptingStateSet = new HashSet<>();
 
     /**
      * Read data from file in given format
@@ -67,7 +72,9 @@ public class TS {
                 propositionSet.add(
                         propositions.get(Integer.parseInt(propositionStr)));
             L.put(states.get(i), propositionSet);
+//            System.out.println("<<"+L+">>");
         }
+
     }
 
     private void addTransition(State start, State end, Act act) {
@@ -88,4 +95,143 @@ public class TS {
             transitions.put(start, transition);
         }
     }
+
+
+    // Product and Persistence Check
+    Set<State> R = new HashSet<>(), T = new HashSet<>();
+    Stack<State> U = new Stack<>(), V = new Stack<>();
+    boolean cycleFound = false;
+
+
+    public TS(TS ts, NBA nba) { //Construct by Product
+        var stateMap = new HashMap<Pair<State, ba.State>, State>();
+        //AP
+        var propositionMap = new HashMap<ba.State, Proposition>();
+        for (var q : nba.states) {
+            var prop = new Proposition(q.name + "_AP'");
+            propositionMap.put(q, prop);
+            propositions.add(prop);
+        }
+        //States and initial states and L
+        for (var s : ts.states) {
+            for (var q : nba.states) {
+                var state = new State(String.format("<%s, %s>", s, q));
+                states.add(state);
+                stateMap.put(new Pair<>(s, q), state);
+                var l = new HashSet<Proposition>();
+                l.add(propositionMap.get(q));
+                L.put(state, l);
+                if (s.initial) {
+                    for (var q0 : nba.states)
+                        if (q0.initial) {
+                            var targetSet = nba.getTargets(q0, ts.L.get(s));
+                            if (targetSet != null && targetSet.contains(q)) {
+                                state.set_initial();
+                                break;
+                            }
+                        }
+                }
+                if (nba.F.contains(q)) acceptingStateSet.add(state);
+            }
+        }
+        //Acts
+        acts.addAll(ts.acts);
+        //Transition
+        for (var state : ts.states) {
+            Map<State, Set<Act>> targetMap = ts.transitions.get(state);
+            if (targetMap != null) {
+                for (State t : targetMap.keySet()) {
+                    Set<Act> acts = targetMap.get(t);
+                    for (var q : nba.states) {
+                        var start = stateMap.get(new Pair<>(state, q));
+                        var targets = nba.getTargets(q, ts.L.get(t));
+                        if (targets != null) {
+                            for (var p : targets) {
+                                State end = stateMap.get(new Pair<>(t, p));
+                                for (var act : acts) addTransition(start, end, act);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+//        System.out.println("++++++++++++++++++++++");
+//        System.out.println(states);
+//        System.out.println(acts);
+//        System.out.println(new TreeMap<>(transitions));
+//        System.out.println(propositions);
+//        System.out.println(new TreeMap<>(L));
+//        System.out.println(new TreeSet<>(acceptingStateSet));
+//        System.out.println("^^^^^^^^^^^^^^^^^^^^^^");
+    }
+
+    public void cycleCheck(State s) {
+        V.push(s);
+        T.add(s);
+        do {
+            State s1 = V.peek();
+            if (transitions.get(s1) != null && transitions.get(s1).containsKey(s)) {
+                cycleFound = true;
+                V.push(s);
+            } else {
+                if (transitions.get(s1) == null) {
+                    V.pop();
+                } else {
+                    Set<State> post = new HashSet<>(transitions.get(s1).keySet());
+                    post.removeAll(T);
+                    if (!post.isEmpty()) {
+                        for (State s2 : post) {
+                            V.push(s2);
+                            T.add(s2);
+                            break;
+                        }
+                    } else {
+                        V.pop();
+                    }
+                }
+            }
+        } while (!(V.empty() || cycleFound));
+    }
+
+    public void reachableCycle(State s) {
+        U.push(s);
+        R.add(s);
+        do {
+            var s1 = U.peek();
+            if (transitions.get(s1) == null) {
+                U.pop();
+                if (acceptingStateSet.contains(s1)) cycleCheck(s1);
+            } else {
+                var post = new HashSet<>(transitions.get(s1).keySet());
+                post.removeAll(R);
+                if (!post.isEmpty()) {
+                    for (State s2 : post) {
+                        U.push(s2);
+                        R.add(s2);
+                        break;
+                    }
+                } else {
+                    U.pop();
+                    if (acceptingStateSet.contains(s1)) cycleCheck(s1);
+                }
+            }
+        } while (!(U.empty() || cycleFound));
+    }
+
+    public boolean persistenceCheck() {
+        var initialSet = new HashSet<State>();
+        for (State s : states)
+            if (s.initial) initialSet.add(s);
+        var delta = new HashSet<>(initialSet);
+        delta.removeAll(R);
+        while ((!delta.isEmpty()) && (!cycleFound)) {
+            for (var s : delta) {
+                reachableCycle(s);
+                break;
+            }
+            delta.removeAll(R);
+        }
+        return !cycleFound;
+    }
+
 }

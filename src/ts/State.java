@@ -1,6 +1,6 @@
 package ts;
 
-public class State {
+public class State implements Comparable<State> {
     private final String name;
     public boolean initial = false;
 
@@ -15,5 +15,10 @@ public class State {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public int compareTo(State other) {
+        return this.name.compareTo(other.name);
     }
 }

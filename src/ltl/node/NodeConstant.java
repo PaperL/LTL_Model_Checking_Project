@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class NodeConstant extends FormulaNode{
 
-    private boolean constant = true;
+    private final boolean constant;
 
     public NodeConstant(boolean constant) {
         this.constant = constant;
@@ -21,3 +21,4 @@ public class NodeConstant extends FormulaNode{
         return new HashSet<>();
     }
 }
+

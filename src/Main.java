@@ -1,4 +1,5 @@
 import ba.GNBA;
+import ba.NBA;
 import ltl.FormulaBuilder;
 import ltl.node.FormulaNode;
 import org.antlr.v4.runtime.misc.Pair;
@@ -64,9 +65,9 @@ public class Main {
         var neg = node.negation();
         System.out.println(neg);
         var gnba = new GNBA(neg);
-//        var nba = new NBA(gnba);
-//        TS product = new TS(ts, nba);
-//        return product.persistenceCheck();
-        return true;
+        var nba = new NBA(gnba);
+        TS product = new TS(ts, nba);
+        return product.persistenceCheck();
+//        return true;
     }
 }

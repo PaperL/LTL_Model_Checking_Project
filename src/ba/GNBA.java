@@ -8,10 +8,10 @@ import ltl.node.NodeUnary;
 import java.util.*;
 
 public class GNBA extends BA {
-    private final ArrayList<Set<State>> F = new ArrayList<>();
+    public final ArrayList<Set<State>> F = new ArrayList<>();
     private final Map<Elementary, State> stateMap = new HashMap<>();
     private final Map<APSubset, Symbol> symbolMap = new HashMap<>();
-    private final Set<FormulaNode> APSet;
+    public final Set<FormulaNode> APSet;
 
     public GNBA(FormulaNode node) {
         Set<Elementary> elementarySet = node.getElementarySet();

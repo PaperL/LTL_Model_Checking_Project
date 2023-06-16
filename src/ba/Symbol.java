@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Symbol {
-    private final APSubset apSubset;
+    public final APSubset apSubset;
 
     public Symbol(Set<Proposition> ap) {
         Set<FormulaNode> apNodes = new HashSet<>();
@@ -19,10 +19,6 @@ public class Symbol {
 
     public Symbol(APSubset subset) {
         apSubset = subset;
-    }
-
-    public APSubset getApSubset() {
-        return apSubset;
     }
 
     @Override
