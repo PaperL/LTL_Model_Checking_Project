@@ -1,0 +1,15 @@
+# Debug
+*test*
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# ANTLR4
+gen/
+.antlr/
+
+# Java
+out/
+bin/
