@@ -1,6 +1,6 @@
 # Report
 
-> 仇天元, 520030910137
+> Tianyuan Qiu
 
 ## 1. LTL Formula Parser and Builder
 
@@ -46,16 +46,16 @@ The resulting NBA represents the temporal property expressed by the LTL formula 
 
 ## 4. Cross Product of Transition System and Nondeterministic Buchi Automaton
 
-To perform model checking on a system with respect to an LTL formula, we need to combine the system's transition system and the Nondeterministic Buchi Automaton (NBA) obtained from the LTL formula. This combination is achieved through the cross product operation.
+To perform model checking on a system with respect to an LTL formula, we need to combine the system's transition system and the Nondeterministic Buchi Automaton (NBA) obtained from the LTL formula. This combination is achieved through the cross-product operation.
 
-The cross product of the transition system is implemented in the `TS` class, following the definition provided in *Principles of Model Checking* (page 200), specifically *Definition 4.62*.
+The cross-product of the transition system is implemented in the `TS` class, following the definition provided in *Principles of Model Checking* (page 200), specifically *Definition 4.62*.
 
-By creating the cross product of the transition system and the NBA, I obtain a new model that incorporates both the system's behavior and the temporal properties expressed by the LTL formula. This combined model allows us to perform model checking and verify the satisfaction of the desired temporal properties.
+By creating the cross-product of the transition system and the NBA, I obtain a new model that incorporates both the system's behavior and the temporal properties expressed by the LTL formula. This combined model allows us to perform model checking and verify the satisfaction of the desired temporal properties.
 
 ## 5. Persistence Checking
 
 Persistence checking is an essential step in model checking, where we examine whether a specific property persists indefinitely within the system's behavior.
 
-The persistence checking functionality is implemented within the `TS` class. It follows the nested depth-first search algorithm described in *Principles of Model Checking* (page 211). By applying this algorithm, we explore the combined model obtained from the cross product operation and determine if the desired property persists throughout the system's execution.
+The persistence checking functionality is implemented within the `TS` class. It follows the nested depth-first search algorithm described in *Principles of Model Checking* (page 211). By applying this algorithm, we explore the combined model obtained from the cross-product operation and determine if the desired property persists throughout the system's execution.
 
 The persistence checking process enables us to identify any violations or confirm the persistence of properties expressed by the LTL formula within the system's behavior, providing valuable insights into the system's correctness and compliance with specified requirements.
